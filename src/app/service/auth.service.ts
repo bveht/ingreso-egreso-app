@@ -1,23 +1,39 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { Store } from '@ngrx/store';
+import { Subscription } from 'rxjs';
 import {map} from 'rxjs/operators';
+import { AppState } from '../app.reducer';
+import * as authActions from '../auth/auth.actions';
 import { Usuario } from '../models/usuario.model';
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(public auth:AngularFireAuth, private firestore:AngularFirestore) { }
+  userSuscription: Subscription;
+  constructor(public auth:AngularFireAuth, 
+              private firestore:AngularFirestore,
+              private store:Store<AppState>) { }
 
   initAuthListener(){
-    this.auth.authState.subscribe( user=> {
-      console.log(user);  
+
+    this.auth.authState.subscribe( fuser=> {
+      //console.log(user);
+      if(fuser){
+         this.userSuscription = this.firestore.doc(`${fuser.uid}/usuario`).valueChanges()
+         .subscribe((firestoreUser: any) => {
+          console.log({firestoreUser});
+          const user = Usuario.fromFirebase(firestoreUser);
+          this.store.dispatch(authActions.setUser({user}));
+         });
+      } else {
+        this.userSuscription.unsubscribe();
+        this.store.dispatch(authActions.unSetUser());
+      }  
     });
   }
-
-
-
   crearUsuario( nombre:string,email:string,password:string) {
     // console.log({nombre,email,password});
     return this.auth.createUserWithEmailAndPassword(email,password)
