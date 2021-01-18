@@ -32,9 +32,7 @@ export class LoginComponent implements OnInit,OnDestroy {
       password:['',Validators.required]
     });
 
-    this.uiSuscription = this.store.select('ui').subscribe(ui => {this.isLoading = ui.isLoading
-    console.log('cargando sub');
-    });
+    this.uiSuscription = this.store.select('ui').subscribe(ui => {this.isLoading = ui.isLoading});
 
   }
   ngOnDestroy(){

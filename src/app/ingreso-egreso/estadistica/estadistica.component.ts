@@ -4,6 +4,7 @@ import { Label, MultiDataSet } from 'ng2-charts';
 import { Subscription } from 'rxjs';
 import { AppState } from 'src/app/app.reducer';
 import { IngresoEgreso } from 'src/app/models/ingreso-egreso.model';
+import { AppStateWithIngreso } from '../ingreso-egreso.reducer';
 
 @Component({
   selector: 'app-estadistica',
@@ -26,7 +27,7 @@ export class EstadisticaComponent implements OnInit {
 
   susbIngresoEgresos: Subscription;
 
-  constructor(private store:Store<AppState>) { }
+  constructor(private store:Store<AppStateWithIngreso>) { }
 
   ngOnInit(): void {
 
